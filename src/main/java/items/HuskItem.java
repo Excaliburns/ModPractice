@@ -18,7 +18,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
-import sun.plugin2.message.TextEventMessage;
+import network.tutmodMessage;
+import network.tutmodPacketHandler;
 import utils.ChestCoordStorage;
 import utils.ModItems;
 
@@ -58,12 +59,12 @@ public class HuskItem extends Item
 
                 if (locatedChest instanceof TileEntityChest)
                 {
-                    player.sendMessage(new TextComponentString("Chest located at: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ()));
                     System.out.println("Chest located at: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ());
 
 
                     if (!locatedChest.getTileData().hasKey("hasBeenAccessed") && totalItemUses <= 1)
                     {
+
                         totalItemUses++;
 
                         chestList[totalItemUses - 1] = new ChestCoordStorage(pos.getX(), pos.getY(), pos.getZ());
@@ -77,6 +78,7 @@ public class HuskItem extends Item
 
                             if (itemHolder.getItem() != Items.AIR)
                             {
+                                player.sendMessage(new TextComponentString("Getting Called!"));
                                 newlist.add(itemHolder);
                             }
                         }
@@ -84,7 +86,6 @@ public class HuskItem extends Item
 
                     if (!locatedChest.getTileData().getBoolean("hasBeenAccessed") && itemisUsed)
                     {
-                        player.sendMessage(new TextComponentString("Using item!"));
                         System.out.println("Using item!");
 
                         for (int i = 0; i < ((TileEntityChest) locatedChest).getSizeInventory(); i++)
@@ -97,24 +98,18 @@ public class HuskItem extends Item
 
                         if (airList.size() > newlist.size())
                         {
+                            System.out.println(newlist.toString());
+                            System.out.println(newlist.size());
 
+                            tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(locatedChest, newlist, airList));
 
-                            for (int i = 0; i < newlist.size(); i++)
-                            {
-                                player.sendMessage(new TextComponentString(newlist.get(i).toString()));
-                                System.out.println(newlist.get(i));
-
-                                ((TileEntityChest) locatedChest).setInventorySlotContents(airList.get(i), newlist.get(i));
-
-                                ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn);
-                                ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn);
-
-                            }
+                            ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn, player);
+                            ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn, player);
 
                             newlist.clear();
                             totalItemUses = 0;
-
-                        } else
+                        }
+                        else
                         {
                             System.out.println("Not enough space!");
                         }
@@ -122,7 +117,7 @@ public class HuskItem extends Item
 
                     if (totalItemUses == 2)
                         itemisUsed = true;
-                    player.sendMessage(new TextComponentString(newlist.toString()));
+
                     System.out.println(newlist);
                 }
 
@@ -132,7 +127,7 @@ public class HuskItem extends Item
         return super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand);
     }
 
-    private void ClearChestStorage(int x, int y, int z, World worldIn)
+    private void ClearChestStorage(int x, int y, int z, World worldIn, EntityPlayer playerIn)
     {
 
         BlockPos chestBlock = new BlockPos(x, y, z);
