@@ -24,8 +24,9 @@ import java.util.ArrayList;
 
 public class HuskItem extends Item {
 
-    private ArrayList<ItemStack> newlist = new ArrayList<ItemStack>();
+    private ArrayList<ItemStack> newlist = new ArrayList<>();
     private ChestCoordStorage[] chestList = new ChestCoordStorage[2];
+    private ArrayList<Integer> airList = new ArrayList<>();
     private int totalItemUses = 0;
     private boolean itemisUsed = false;
 
@@ -42,74 +43,81 @@ public class HuskItem extends Item {
 
     @Override
     public EnumActionResult onItemUseFirst(EntityPlayer player, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        if (!worldIn.isRemote)
-        {
+        if (!worldIn.isRemote) {
             if (player.getHeldItem(player.getActiveHand()).getItem() == ModItems.huskItem)
             {
 
                 TileEntity locatedChest = worldIn.getTileEntity(pos);
 
-                if (locatedChest instanceof TileEntityChest && locatedChest != null)
-                {
+                if (locatedChest instanceof TileEntityChest) {
                     System.out.println("Chest located at: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ());
 
 
-                    if (!locatedChest.getTileData().hasKey("hasBeenAccessed") && totalItemUses <= 1)
-                    {
+                    if (!locatedChest.getTileData().hasKey("hasBeenAccessed") && totalItemUses <= 1) {
                         totalItemUses++;
 
-                        chestList[totalItemUses-1] = new ChestCoordStorage(pos.getX(), pos.getY(), pos.getZ());
+                        chestList[totalItemUses - 1] = new ChestCoordStorage(pos.getX(), pos.getY(), pos.getZ());
 
                         locatedChest.getTileData().setBoolean("hasBeenAccessed", true);
 
-                        for(int i = 0; i < ((TileEntityChest) locatedChest).getSizeInventory() ; i++)
-                        {
+                        for (int i = 0; i < ((TileEntityChest) locatedChest).getSizeInventory(); i++) {
 
                             ItemStack itemHolder = (((TileEntityChest) locatedChest).getStackInSlot(i));
 
-                            if (itemHolder.getItem() != Items.AIR)
-                            {
+                            if (itemHolder.getItem() != Items.AIR) {
                                 newlist.add(itemHolder);
                             }
                         }
                     }
 
-                    if(!locatedChest.getTileData().getBoolean("hasBeenAccessed") == true && itemisUsed == true && locatedChest != null)
-                    {
+                    if (!locatedChest.getTileData().getBoolean("hasBeenAccessed") && itemisUsed ) {
 
                         System.out.println("Using item!");
 
-                        for(int i = 0; i < newlist.size() ; i++ )
+                        for (int i = 0; i < ((TileEntityChest) locatedChest).getSizeInventory(); i++)
                         {
-
-                            System.out.println(newlist.get(i));
-
-                            locatedChest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).insertItem(i+1, newlist.get(i), false);
-
-                            ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn);
-                            ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn);
-
+                            if (((TileEntityChest) locatedChest).getStackInSlot(i).getItem() == Items.AIR)
+                            {
+                                airList.add(i);
+                            }
                         }
 
-                        newlist.clear();
+                        if (airList.size() > newlist.size())
+                        {
 
-                        totalItemUses = 0;
 
+                            for (int i = 0; i < newlist.size(); i++)
+                            {
+
+                                System.out.println(newlist.get(i));
+
+                                ((TileEntityChest) locatedChest).setInventorySlotContents(airList.get(i) , newlist.get(i));
+
+                                ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn);
+                                ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn);
+
+                            }
+
+                            newlist.clear();
+                            totalItemUses = 0;
+
+                        } else {
+                            System.out.println("Not enough space!");
+                        }
                     }
+
+                    if (totalItemUses == 2)
+                        itemisUsed = true;
+                    System.out.println(newlist);
                 }
 
-                if(totalItemUses == 2)
-                    itemisUsed = true;
-                System.out.println(newlist);
             }
-
+            System.out.println(totalItemUses);
         }
-        System.out.println(totalItemUses);
-
         return super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand);
     }
 
-    public void ClearChestStorage(int x, int y, int z, World worldIn)
+    private void ClearChestStorage(int x, int y, int z, World worldIn)
     {
 
         BlockPos chestBlock = new BlockPos(x, y, z);
