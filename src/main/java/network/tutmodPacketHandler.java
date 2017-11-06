@@ -15,7 +15,8 @@ public class tutmodPacketHandler
 
     }
 
-    public static int nextID(){
+    public static int nextID()
+    {
         return packetId++;
     }
 

@@ -8,15 +8,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import utils.ModItems;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
-public class ClientProxy extends CommonProxy{
+public class ClientProxy extends CommonProxy
+{
 
     @Override
-    public void preInit(FMLPreInitializationEvent e){
+    public void preInit(FMLPreInitializationEvent e)
+    {
         super.preInit(e);
     }
 
     @SubscribeEvent
-    public static void registerModels(ModelRegistryEvent event){
+    public static void registerModels(ModelRegistryEvent event)
+    {
         ModItems.initModels();
     }
 }

@@ -57,7 +57,7 @@ public class tutmodMessage implements IMessage
             EntityPlayerMP EntityPlayer = ctx.getServerHandler().player;
             World world = EntityPlayer.getEntityWorld();
 
-            if(world.isBlockLoaded(locatedChest.getPos()))
+            if (world.isBlockLoaded(locatedChest.getPos()))
             {
                 for (int i = 0; i < itemsList.size(); i++)
                 {

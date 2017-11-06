@@ -24,10 +24,12 @@ public class TutMod
     public static Logger logger;
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event){
+    public void preInit(FMLPreInitializationEvent event)
+    {
         logger = event.getModLog();
         proxy.preInit(event);
     }
+
     @Mod.EventHandler
     public void init(FMLInitializationEvent e)
     {
@@ -36,7 +38,8 @@ public class TutMod
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent e){
+    public void postInit(FMLPostInitializationEvent e)
+    {
         proxy.postInit(e);
     }
 

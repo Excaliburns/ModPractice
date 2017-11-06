@@ -108,8 +108,7 @@ public class HuskItem extends Item
 
                             newlist.clear();
                             totalItemUses = 0;
-                        }
-                        else
+                        } else
                         {
                             System.out.println("Not enough space!");
                         }
