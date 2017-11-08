@@ -1,7 +1,6 @@
 package network;
 
 import io.netty.buffer.ByteBuf;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -38,14 +37,33 @@ public class tutmodMessage implements IMessage
     }
 
     @Override
+    public void fromBytes(ByteBuf buf)
+    {
+
+        for (int x = 0; x < itemsList.size(); x++)
+        {
+            itemsList.set(x, ByteBufUtils.readItemStack(buf));
+        }
+        for (int x = 0; x < airSlots.size(); x++)
+        {
+            airSlots.set(x, buf.readInt());
+        }
+
+        for (int x = 0; x < 3; x++)
+        {
+            chestPos[x].setX(buf.readInt());
+            chestPos[x].setY(buf.readInt());
+            chestPos[x].setZ(buf.readInt());
+        }
+    }
+
+    @Override
     public void toBytes(ByteBuf buf)
     {
-        System.out.println(itemsList.size() + "Called in toBytes before writing to the buffer");
-        System.out.println(itemsList + "Called in toBytes before writing to the buffer");
-
         for(int x = 0; x < itemsList.size() ; x++)
         {
             ByteBufUtils.writeItemStack(buf, itemsList.get(x));
+
         }
         for(int x = 0; x < airSlots.size() ; x++)
         {
@@ -58,32 +76,6 @@ public class tutmodMessage implements IMessage
             buf.writeInt(chestPos[x].getY());
             buf.writeInt(chestPos[x].getZ());
         }
-
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buf)
-    {
-        System.out.println(itemsList.size() + "Called in fromBytes before writing to the buffer");
-        System.out.println(itemsList + "Called in fromBytes before writing to the buffer");
-
-        for(int x = 0; x < itemsList.size() ; x++)
-        {
-          itemsList.set(x, ByteBufUtils.readItemStack(buf));
-        }
-
-        for(int x = 0; x < airSlots.size() ; x++)
-        {
-            airSlots.set(x, buf.readInt());
-        }
-
-        for(int x = 0; x < 3; x++)
-        {
-            chestPos[x].setX(buf.readInt());
-            chestPos[x].setY(buf.readInt());
-            chestPos[x].setZ(buf.readInt());
-        }
-
     }
 
     public static class Handler implements IMessageHandler<tutmodMessage, IMessage>
