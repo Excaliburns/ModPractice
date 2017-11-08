@@ -1,6 +1,7 @@
 package network;
 
 import io.netty.buffer.ByteBuf;
+import jdk.nashorn.internal.ir.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -12,12 +13,13 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import utils.ChestCoordStorage;
 
 import java.util.ArrayList;
 
 public class tutmodMessage implements IMessage
 {
-    private int[] chestPos = new int[9];
+    private ChestCoordStorage[] chestPos = new ChestCoordStorage[3];
     private ArrayList<ItemStack> itemsList;
     private ArrayList<Integer> airSlots;
 
@@ -25,11 +27,12 @@ public class tutmodMessage implements IMessage
     {
     }
 
-    public tutmodMessage(int x, int y, int z, ArrayList<ItemStack> newList, ArrayList<Integer> airList)
+    public tutmodMessage(ChestCoordStorage[] chestCoords, ArrayList<ItemStack> newList, ArrayList<Integer> airList)
     {
-        chestPos[0] = x;
-        chestPos[1] = y;
-        chestPos[2] = z;
+        for(int i = 0; i < 3 ; i++)
+        {
+          chestPos[i] = chestCoords[i];
+        }
         itemsList = newList;
         airSlots = airList;
     }
@@ -47,9 +50,11 @@ public class tutmodMessage implements IMessage
             buf.writeInt(airSlots.get(x));
         }
 
-        for(int x = 0; x < 3; x++)
+        for(int x = 0; x < 3 ; x++)
         {
-            buf.writeInt(chestPos[x]);
+            buf.writeInt(chestPos[x].getX());
+            buf.writeInt(chestPos[x].getY());
+            buf.writeInt(chestPos[x].getZ());
         }
 
     }
@@ -67,9 +72,11 @@ public class tutmodMessage implements IMessage
             airSlots.set(x, buf.readInt());
         }
 
-        for(int x = 0; x < 9; x++)
+        for(int x = 0; x < 3; x++)
         {
-            chestPos[x] = buf.readInt();
+            chestPos[x].setX(buf.readInt());
+            chestPos[x].setY(buf.readInt());
+            chestPos[x].setZ(buf.readInt());
         }
 
     }
@@ -79,25 +86,35 @@ public class tutmodMessage implements IMessage
         @Override
         public IMessage onMessage(tutmodMessage message, MessageContext ctx)
         {
-            EntityPlayerMP serverPlayer = ctx.getServerHandler().player;
             FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
             return null;
         }
 
         private void handle(tutmodMessage message, MessageContext ctx)
         {
+            TileEntity chestArray[] = new TileEntity[3];
             EntityPlayerMP EntityPlayer = ctx.getServerHandler().player;
             World world = EntityPlayer.getEntityWorld();
 
-            BlockPos chestBlock = new BlockPos(message.chestPos[0], message.chestPos[1], message.chestPos[2]);
+            for(int i = 0; i < 3 ; i ++)
+            {
+                chestArray[i] = world.getTileEntity(new BlockPos(message.chestPos[i].getX(), message.chestPos[i].getY(), message.chestPos[i].getZ()));
+            }
 
-            TileEntity locatedChest = world.getTileEntity(chestBlock);
-
-            if (world.isBlockLoaded(locatedChest.getPos()))
+            if (world.isBlockLoaded(chestArray[2].getPos()))
             {
                 for (int i = 0; i < message.itemsList.size(); i++)
                 {
-                    ((TileEntityChest) locatedChest).setInventorySlotContents(message.airSlots.get(i), message.itemsList.get(i));
+                    ((TileEntityChest) chestArray[2]).setInventorySlotContents(message.airSlots.get(i), message.itemsList.get(i));
+                }
+                for (int i = 0; i < 2 ; i++)
+                {
+                    for(int x = 0; i < ((TileEntityChest) chestArray[i]).getSizeInventory() ; x++)
+                    {
+                        ((TileEntityChest) chestArray[i]).setInventorySlotContents(x, null );
+                    }
+
+                    chestArray[i].getTileData().setBoolean("hasBeenAccessed", false);
                 }
             }
         }

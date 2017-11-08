@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
 import network.tutmodMessage;
 import network.tutmodPacketHandler;
 import utils.ChestCoordStorage;
@@ -29,7 +28,7 @@ public class HuskItem extends Item
 {
 
     private ArrayList<ItemStack> newlist = new ArrayList<>();
-    private ChestCoordStorage[] chestList = new ChestCoordStorage[2];
+    private ChestCoordStorage[] chestList = new ChestCoordStorage[3];
     private ArrayList<Integer> airList = new ArrayList<>();
     private int totalItemUses = 0;
     private boolean itemisUsed = false;
@@ -65,9 +64,8 @@ public class HuskItem extends Item
                     if (!locatedChest.getTileData().hasKey("hasBeenAccessed") && totalItemUses <= 1)
                     {
 
+                        chestList[totalItemUses] = new ChestCoordStorage(pos.getX(), pos.getY(), pos.getZ());
                         totalItemUses++;
-
-                        chestList[totalItemUses - 1] = new ChestCoordStorage(pos.getX(), pos.getY(), pos.getZ());
 
                         locatedChest.getTileData().setBoolean("hasBeenAccessed", true);
 
@@ -86,6 +84,7 @@ public class HuskItem extends Item
 
                     if (!locatedChest.getTileData().getBoolean("hasBeenAccessed") && itemisUsed)
                     {
+                        chestList[2] = new ChestCoordStorage(pos.getX(), pos.getY(), pos.getZ());
                         System.out.println("Using item!");
 
                         for (int i = 0; i < ((TileEntityChest) locatedChest).getSizeInventory(); i++)
@@ -98,18 +97,13 @@ public class HuskItem extends Item
 
                         if (airList.size() > newlist.size())
                         {
-                            System.out.println(newlist.toString());
+                            System.out.println(newlist);
                             System.out.println(newlist.size());
 
-                            tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(pos.getX(), pos.getY(), pos.getZ(), newlist, airList));
-
-
-                            //ClearChestStorage is called before the packet is handled by the server, breaking everything. Will be moving this functionality to tutmodMessage.
-
-                            //ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn, player);
-                            //ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn, player);
+                            tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(chestList, newlist, airList));
 
                             totalItemUses = 0;
+
                         } else
                         {
                             System.out.println("Not enough space!");
@@ -128,21 +122,3 @@ public class HuskItem extends Item
         return super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand);
     }
 }
-/*
-    private void ClearChestStorage(int x, int y, int z, World worldIn, EntityPlayer playerIn)
-    {
-
-        BlockPos chestBlock = new BlockPos(x, y, z);
-
-        TileEntity locatedChest = worldIn.getTileEntity(chestBlock);
-
-        for (int i = 0; i < ((TileEntityChest) locatedChest).getSizeInventory(); i++)
-        {
-            locatedChest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).extractItem(i, ((TileEntityChest) locatedChest).getStackInSlot(i).getCount(), false);
-        }
-
-        locatedChest.getTileData().setBoolean("hasBeenAccessed", false);
-
-    }
-}
-*/
