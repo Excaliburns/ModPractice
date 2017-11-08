@@ -3,6 +3,8 @@ package network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -12,6 +14,8 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.lwjgl.Sys;
+
 import java.util.ArrayList;
 
 public class tutmodMessage implements IMessage
@@ -40,7 +44,6 @@ public class tutmodMessage implements IMessage
         for(int x = 0; x < itemsList.size() ; x++)
         {
             ByteBufUtils.writeItemStack(buf, itemsList.get(x));
-
         }
         for(int x = 0; x < airSlots.size() ; x++)
         {
@@ -91,15 +94,12 @@ public class tutmodMessage implements IMessage
 
             BlockPos chestBlock = new BlockPos(chestPos[0], chestPos[1], chestPos[2]);
 
-            System.out.println(itemsList + ", " + airSlots );
-
             TileEntity locatedChest = world.getTileEntity(chestBlock);
 
             if (world.isBlockLoaded(locatedChest.getPos()))
             {
                 for (int i = 0; i < itemsList.size(); i++)
                 {
-                    System.out.println(itemsList.get(i));
                     ((TileEntityChest) locatedChest).setInventorySlotContents(airSlots.get(i), itemsList.get(i));
                 }
             }
