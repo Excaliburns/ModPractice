@@ -28,7 +28,7 @@ public class HuskItem extends Item
 {
 
     private ChestCoordStorage[] chestList = new ChestCoordStorage[3];
-    private ArrayList<ItemStack> newlist = new ArrayList<>();
+    private ArrayList<ItemStack> itemList = new ArrayList<>();
     private ArrayList<Integer> airList = new ArrayList<>();
     private int totalItemUses = 0;
     private boolean itemisUsed = false;
@@ -77,7 +77,7 @@ public class HuskItem extends Item
                             if (itemHolder.getItem() != Items.AIR)
                             {
                                 player.sendMessage(new TextComponentString("Getting Called!"));
-                                newlist.add(itemHolder);
+                                itemList.add(itemHolder);
                             }
                         }
                     }
@@ -95,12 +95,12 @@ public class HuskItem extends Item
                             }
                         }
 
-                        if (airList.size() > newlist.size())
+                        if (airList.size() > itemList.size())
                         {
-                            System.out.println(newlist);
-                            System.out.println(newlist.size());
+                            System.out.println(itemList);
+                            System.out.println(itemList.size());
 
-                            tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(chestList, newlist, airList));
+                            tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(chestList, itemList, airList));
 
                             totalItemUses = 0;
 
