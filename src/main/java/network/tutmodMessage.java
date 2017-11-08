@@ -40,6 +40,8 @@ public class tutmodMessage implements IMessage
     @Override
     public void toBytes(ByteBuf buf)
     {
+        System.out.println(itemsList.size() + "Called in toBytes before writing to the buffer");
+        System.out.println(itemsList + "Called in toBytes before writing to the buffer");
 
         for(int x = 0; x < itemsList.size() ; x++)
         {
@@ -62,6 +64,9 @@ public class tutmodMessage implements IMessage
     @Override
     public void fromBytes(ByteBuf buf)
     {
+        System.out.println(itemsList.size() + "Called in fromBytes before writing to the buffer");
+        System.out.println(itemsList + "Called in fromBytes before writing to the buffer");
+
         for(int x = 0; x < itemsList.size() ; x++)
         {
           itemsList.set(x, ByteBufUtils.readItemStack(buf));

@@ -27,8 +27,8 @@ import java.util.ArrayList;
 public class HuskItem extends Item
 {
 
-    private ArrayList<ItemStack> newlist = new ArrayList<>();
     private ChestCoordStorage[] chestList = new ChestCoordStorage[3];
+    private ArrayList<ItemStack> newlist = new ArrayList<>();
     private ArrayList<Integer> airList = new ArrayList<>();
     private int totalItemUses = 0;
     private boolean itemisUsed = false;
