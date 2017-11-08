@@ -101,12 +101,14 @@ public class HuskItem extends Item
                             System.out.println(newlist.toString());
                             System.out.println(newlist.size());
 
-                            tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(locatedChest, newlist, airList));
+                            tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(pos.getX(), pos.getY(), pos.getZ(), newlist, airList));
 
-                            ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn, player);
-                            ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn, player);
 
-                            newlist.clear();
+                            //ClearChestStorage is called after the packet is handled by the server, breaking everything. Will be moving this functionality to tutmodMessage.
+
+                            //ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn, player);
+                            //ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn, player);
+
                             totalItemUses = 0;
                         } else
                         {
@@ -125,7 +127,8 @@ public class HuskItem extends Item
         }
         return super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand);
     }
-
+}
+/*
     private void ClearChestStorage(int x, int y, int z, World worldIn, EntityPlayer playerIn)
     {
 
@@ -142,3 +145,4 @@ public class HuskItem extends Item
 
     }
 }
+*/
