@@ -104,7 +104,7 @@ public class HuskItem extends Item
                             tutmodPacketHandler.INSTANCE.sendToServer(new tutmodMessage(pos.getX(), pos.getY(), pos.getZ(), newlist, airList));
 
 
-                            //ClearChestStorage is called after the packet is handled by the server, breaking everything. Will be moving this functionality to tutmodMessage.
+                            //ClearChestStorage is called before the packet is handled by the server, breaking everything. Will be moving this functionality to tutmodMessage.
 
                             //ClearChestStorage(chestList[0].getX(), chestList[0].getY(), chestList[0].getZ(), worldIn, player);
                             //ClearChestStorage(chestList[1].getX(), chestList[1].getY(), chestList[1].getZ(), worldIn, player);

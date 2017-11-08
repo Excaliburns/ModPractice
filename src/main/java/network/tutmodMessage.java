@@ -3,8 +3,6 @@ package network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -14,15 +12,14 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.lwjgl.Sys;
 
 import java.util.ArrayList;
 
 public class tutmodMessage implements IMessage
 {
-    private static int[] chestPos = new int[3];
-    private static ArrayList<ItemStack> itemsList;
-    private static ArrayList<Integer> airSlots;
+    private int[] chestPos = new int[9];
+    private ArrayList<ItemStack> itemsList;
+    private ArrayList<Integer> airSlots;
 
     public tutmodMessage()
     {
@@ -70,7 +67,7 @@ public class tutmodMessage implements IMessage
             airSlots.set(x, buf.readInt());
         }
 
-        for(int x = 0; x < 3; x++)
+        for(int x = 0; x < 9; x++)
         {
             chestPos[x] = buf.readInt();
         }
@@ -92,15 +89,15 @@ public class tutmodMessage implements IMessage
             EntityPlayerMP EntityPlayer = ctx.getServerHandler().player;
             World world = EntityPlayer.getEntityWorld();
 
-            BlockPos chestBlock = new BlockPos(chestPos[0], chestPos[1], chestPos[2]);
+            BlockPos chestBlock = new BlockPos(message.chestPos[0], message.chestPos[1], message.chestPos[2]);
 
             TileEntity locatedChest = world.getTileEntity(chestBlock);
 
             if (world.isBlockLoaded(locatedChest.getPos()))
             {
-                for (int i = 0; i < itemsList.size(); i++)
+                for (int i = 0; i < message.itemsList.size(); i++)
                 {
-                    ((TileEntityChest) locatedChest).setInventorySlotContents(airSlots.get(i), itemsList.get(i));
+                    ((TileEntityChest) locatedChest).setInventorySlotContents(message.airSlots.get(i), message.itemsList.get(i));
                 }
             }
         }
