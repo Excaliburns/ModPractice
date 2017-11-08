@@ -112,12 +112,9 @@ public class HuskItem extends Item
 
                     if (totalItemUses == 2)
                         itemisUsed = true;
-
-                    System.out.println(newlist);
                 }
 
             }
-            System.out.println(totalItemUses);
         }
         return super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand);
     }
