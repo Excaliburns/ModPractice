@@ -28,6 +28,6 @@ public class tutmodPacketHandler
 
     public static void registerMessages()
     {
-        INSTANCE.registerMessage(tutmodMessage.Handler.class, tutmodMessage.class, nextID(), Side.SERVER);
+        INSTANCE.registerMessage(tutmodHuskItemMessage.Handler.class, tutmodHuskItemMessage.class, nextID(), Side.SERVER);
     }
 }
