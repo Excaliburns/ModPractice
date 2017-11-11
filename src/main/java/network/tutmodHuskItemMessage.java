@@ -58,15 +58,15 @@ public class tutmodHuskItemMessage implements IMessage
     {
         for(int i = 0; i < 3; i++)
         {
-            for (int x = 0; i < 3; i++)
+            for (int x = 0; x < 3; x++)
             {
                 buf.writeInt(chestCoords[x][i]);
             }
-            for (int x = 0; i < 3; i++)
+            for (int x = 0; x < 3; x++)
             {
                 buf.writeInt(chestCoords[x][i]);
             }
-            for (int x = 0; i < 3; i++)
+            for (int x = 0; x < 3; x++)
             {
                 buf.writeInt(chestCoords[x][i]);
             }
@@ -102,7 +102,7 @@ public class tutmodHuskItemMessage implements IMessage
                 {
                     for( int x = 0; x < ((TileEntityChest) chestList[i]).getSizeInventory(); x++)
                     {
-                        if( ((TileEntityChest) chestList[i]).getStackInSlot(x) == null)
+                        if( ((TileEntityChest) chestList[i]).getStackInSlot(x).isEmpty())
                         {
                             totalEmptySlots.add(x);
                         }
@@ -124,7 +124,7 @@ public class tutmodHuskItemMessage implements IMessage
                 {
                     for( int x = 0; x < ((TileEntityChest) chestList[i]).getSizeInventory(); x++)
                     {
-                        if(((TileEntityChest) chestList[i]).getStackInSlot(x) != null)
+                        if(!((TileEntityChest) chestList[i]).getStackInSlot(x).isEmpty())
                         {
                             itemsList.add(((TileEntityChest) chestList[i]).getStackInSlot(x));
                         }
